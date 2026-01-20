@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductModel;
-
+use App\Models\WarehouseModel;
 class StockMovementModel extends Model
 {
     use HasFactory;
@@ -16,7 +16,8 @@ class StockMovementModel extends Model
         'user_name',
         'type',
         'quantity',
-        'note'
+        'note',
+        'warehouse_id'
     ];
 
     const TYPE_IN = 'IN';
@@ -24,6 +25,11 @@ class StockMovementModel extends Model
 
     public function product()
     {
-        return $this->belongsTo(ProductModel::class);
+        return $this->belongsTo(ProductModel::class, 'product_id', 'id');
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(WarehouseModel::class, 'warehouse_id', 'id');
     }
 }

@@ -40,6 +40,7 @@
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">User Name</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Product Name</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Warehouse Name</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Quantity</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Unit</th>
                       <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Type</th>
@@ -95,6 +96,7 @@
                 row.innerHTML = `
                 <td class="align-middle text-center">${history.user_name}</td>
                 <td class="align-middle text-center">${history.product_name}</td>
+                <td class="align-middle text-center">${history.warehouse_name}</td>
                 <td class="align-middle text-center">${history.quantity}</td>
                 <td class="align-middle text-center">${history.product_unit}</td>
                 <td class="align-middle text-center">${history.type}</td>

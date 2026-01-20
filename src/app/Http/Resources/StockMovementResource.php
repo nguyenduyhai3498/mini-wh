@@ -19,9 +19,10 @@ class StockMovementResource extends JsonResource
             'product_id' => $this->product_id,
             'product_name' => $this->product?->name,
             'product_unit' => $this->product?->unit,
+            'warehouse_name' => $this->warehouse?->name ?? '',
             'user_name' => $this->user_name,
             'type' => $this->type,
-            'quantity' => $this->quantity,
+            'quantity' => number_format($this->quantity, 0),
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];

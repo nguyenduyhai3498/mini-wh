@@ -94,7 +94,9 @@
                 </div>
             @endif
             <input type="hidden" id="product-id" name="product-id">
+            <input type="hidden" id="warehouse-id" name="warehouse-id" value="{{ $warehouse->id }}">
             <div class="row">
+
                 <div class="col-md-12">
                     <div class="form-group">
                         <label for="user-name" class="form-control-label">{{ __('Full Name') }}</label>
@@ -103,6 +105,14 @@
                                 @error('name')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label for="warehouse-name" class="form-control-label">{{ __('Warehouse Name') }}</label>
+                        <div class="@error('warehouse.name')border border-danger rounded-3 @enderror">
+                            <input class="form-control" value="{{ $warehouse->name }}" type="text" placeholder="Name" id="warehouse-name" name="warehouse-name" readonly>
                         </div>
                     </div>
                 </div>
@@ -248,13 +258,20 @@
         function renderProducts(products) {
             const tbody = document.getElementById('products-tbody');
             tbody.innerHTML = '';
+            var quantityHtml = '';
             products.forEach(product => {
+                quantityHtml = '';
+                product.inventory_item.forEach(item => {
+                    if(item.warehouse_id == {{ $warehouse->id }}) {
+                        quantityHtml += `<div class="text-center">${item.warehouse_name} - <span class="badge bg-info">${item.quantity}</span></div><br>`;
+                    }
+                });
                 const row = document.createElement('tr');
                 row.innerHTML = `<td class="align-middle text-center">${product.name}</td>
-                <td class="align-middle text-center">${product.quantity}</td>
+                <td class="align-middle text-center">${quantityHtml}</td>
                 <td class="align-middle text-center">${product.unit}</td>
                 <td class="align-middle text-center">${product?.last_export ? product.last_export.format('DD/MM/YYYY') : '-'}</td>
-                <td><button type="button" class="btn btn-primary" onclick="openModal(${product.id})">Export</button></td>`;
+                <td><button type="button" class="btn btn-primary btn-sm m-0 p-2" onclick="openModal(${product.id})">Export</button></td>`;
                 tbody.appendChild(row);
             });
         }
@@ -279,6 +296,7 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({
+                    warehouse_id: {{ $warehouse->id }},
                     product_id: productId,
                     quantity: quantity,
                     user_name: userName

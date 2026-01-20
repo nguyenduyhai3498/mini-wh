@@ -65,6 +65,7 @@ class ProductController extends Controller
             'type' => StockMovementModel::TYPE_IN,
             'quantity' => $request->input('quantity') ?? 0,
             'note' => $request->input('note'),
+            'warehouse_id' => $request->input('warehouse_id'),
         ];
         StockMovementModel::create($data);
         return response()->json(['success' => 'Product imported successfully'], 200);
@@ -88,6 +89,7 @@ class ProductController extends Controller
             'type' => StockMovementModel::TYPE_OUT,
             'quantity' => $request->input('quantity') ?? 0,
             'note' => $request->input('note'),
+            'warehouse_id' => $request->input('warehouse_id'),
         ];
         StockMovementModel::create($data);
         return response()->json(['success' => 'Product exported successfully'], 200);
@@ -113,7 +115,12 @@ class ProductController extends Controller
     }
 
     public function exportList(Request $request) {
-        return view('warehouse.export');
+        $warehouseId = $request->input('warehouse_id');
+        $warehouse = WarehouseModel::find($warehouseId);
+        if (!$warehouse) {
+            abort(404);
+        }
+        return view('warehouse.export', compact('warehouse'));
     }
 
     
