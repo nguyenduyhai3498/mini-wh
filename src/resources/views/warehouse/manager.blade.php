@@ -1,9 +1,7 @@
 @extends('warehouse.main')
 
 @section('content')
-@php
-$selectedWarehouseId = request()->get('warehouse_id');
-@endphp
+
 <div>
     <div class="container-fluid">
         <div class="page-header border-radius-xl mt-4" style="min-height:80px; background-image: url('../assets/img/curved-images/curved0.jpg'); background-position-y: 50%;">
@@ -25,33 +23,31 @@ $selectedWarehouseId = request()->get('warehouse_id');
         <div class="col-12">
           <div class="card mb-4">
             <div class="card-header pb-0">
-              <h6>Products table</h6>
+              <h6>Warehouse Manager</h6>
               <div class="row">
                 <div class="col-md-6">
                   <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" id="search-product" name="search-product">
-                    <button class="btn btn-primary m-0" type="button" onclick="loadProducts()">Search</button>
+                    <input type="text" class="form-control" placeholder="Search" id="search-warehouse" name="search-warehouse">
+                    <button class="btn btn-primary m-0" type="button" onclick="loadWarehouses()">Search</button>
                   </div>
                 </div>
                 <div class="col-md-6 text-end">
-                  <button class="btn btn-primary" type="button" onclick="createProduct()">Create Product</button>
+                  <button class="btn btn-primary" type="button" onclick="createWarehouse()">Create</button>
                 </div>
               </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
               <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0" id="products-table">
+                <table class="table align-items-center mb-0" id="warehouses-table">
                   <thead>
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Quantity</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Unit</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Import</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Last Export</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Description</th>
+                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Timestamp</th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
-                  <tbody id="products-tbody">
+                  <tbody id="warehouses-tbody">
                   </tbody>
                   <tfoot>
                     <tr>
@@ -112,39 +108,12 @@ $selectedWarehouseId = request()->get('warehouse_id');
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <label for="product-name" class="form-control-label">{{ __('Warehouse') }}</label>
-                        <div class="@error('warehouse-id')border border-danger rounded-3 @enderror">
-                            <select class="form-control" id="warehouse-id" name="warehouse-id">
-                                <option value="">-- Select Warehouse --</option>
-                                @foreach($warehouses as $warehouse)
-                                    <option value="{{ $warehouse->id }}" {{ $selectedWarehouseId == $warehouse->id ? 'selected' : '' }}>{{ $warehouse->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('warehouse-id')
-                                <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="product-name" class="form-control-label">{{ __('Product Name') }}</label>
+                        <label for="description" class="form-control-label">{{ __('Description') }}</label>
                         <div class="@error('user.name')border border-danger rounded-3 @enderror">
-                            <input class="form-control" value="" type="text" placeholder="Name" id="product-name" name="product-name" readonly>
-                                @error('name')
-                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                @enderror
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="user-email" class="form-control-label">{{ __('Quantity') }}</label>
-                        <div class="@error('email')border border-danger rounded-3 @enderror">
-                            <input class="form-control" value="" type="number" placeholder="Quantity" id="quantity" name="quantity">
-                                @error('quantity')
+                            <textarea class="form-control" placeholder="Description" id="description" name="description"></textarea>
+                                @error('description')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                         </div>
@@ -156,26 +125,27 @@ $selectedWarehouseId = request()->get('warehouse_id');
 
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button class="btn btn-primary" type="button" onclick="importProduct();">Save</button>
+        <button class="btn btn-primary" type="button" onclick="createWarehouse();">Save</button>
       </div>
 
     </div>
   </div>
 </div>
 
-<div class="modal fade" id="createProductModal" tabindex="-1">
+<div class="modal fade" id="createWarehouseModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title">Create Product</h5>
+        <h5 class="modal-title">Warehouse Manager</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
       <div class="modal-body">
         
-        <form action="/products/create" method="POST" role="form text-left">
+        <form action="/warehouses/create" method="POST" role="form text-left">
             @csrf
+            <input type="hidden" id="warehouse-id" name="warehouse-id">
             @if($errors->any())
                 <div class="mt-3  alert alert-primary alert-dismissible fade show" role="alert">
                     <span class="alert-text text-white">
@@ -197,9 +167,9 @@ $selectedWarehouseId = request()->get('warehouse_id');
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label for="product-name" class="form-control-label">{{ __('Product Name') }}</label>
+                        <label for="create-warehouse-name" class="form-control-label">{{ __('Warehouse Name') }}</label>
                         <div class="@error('user.name')border border-danger rounded-3 @enderror">
-                            <input class="form-control" value="" type="text" placeholder="Name" id="create-product-name" name="name">
+                            <input class="form-control" value="" type="text" placeholder="Name" id="create-warehouse-name" name="name">
                                 @error('name')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
@@ -208,21 +178,10 @@ $selectedWarehouseId = request()->get('warehouse_id');
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="product-name" class="form-control-label">{{ __('Unit') }}</label>
-                        <div class="@error('unit')border border-danger rounded-3 @enderror">
-                            <input class="form-control" value="" type="text" placeholder="Unit" id="create-product-unit" name="unit">
-                                @error('unit')
-                                    <p class="text-danger text-xs mt-2">{{ $message }}</p>
-                                @enderror
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="create-product-quantity" class="form-control-label">{{ __('Quantity') }}</label>
-                        <div class="@error('quantity')border border-danger rounded-3 @enderror">
-                            <input class="form-control" value="" type="number" placeholder="Quantity" id="create-product-quantity" name="quantity">
-                                @error('quantity')
+                        <label for="create-warehouse-description" class="form-control-label">{{ __('Description') }}</label>
+                        <div class="@error('description')border border-danger rounded-3 @enderror">
+                            <textarea class="form-control" placeholder="Description" id="create-warehouse-description" name="description"></textarea>
+                                @error('description')
                                     <p class="text-danger text-xs mt-2">{{ $message }}</p>
                                 @enderror
                         </div>
@@ -234,7 +193,7 @@ $selectedWarehouseId = request()->get('warehouse_id');
 
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button class="btn btn-primary" type="button" onclick="saveProduct();">Save</button>
+        <button class="btn btn-primary" type="button" onclick="saveWarehouse();">Save</button>
       </div>
 
     </div>
@@ -244,22 +203,22 @@ $selectedWarehouseId = request()->get('warehouse_id');
 
 @section('scripts')
     <script>
-        let productList = [];
+        let warehouseList = [];
         let page = 1;
-        let totalProductList = 1;
+        let totalWarehouseList = 1;
         const modalEl = document.getElementById('exampleModal');
         const modalImport = new bootstrap.Modal(modalEl);
-        const modalCreateProductEl = document.getElementById('createProductModal');
-        const modalCreateProduct = new bootstrap.Modal(modalCreateProductEl);
+        const modalCreateWarehouseEl = document.getElementById('createWarehouseModal');
+        const modalCreateWarehouse = new bootstrap.Modal(modalCreateWarehouseEl);
 
-        function loadProducts() {
-            const search = document.getElementById('search-product').value;
-            fetch('/products/list?page=' + page + '&search=' + search)
+        function loadWarehouses() {
+            const search = document.getElementById('search-warehouse').value;
+            fetch('/warehouse/list?page=' + page + '&search=' + search)
             .then(response => response.json())
             .then(data => {
-                productList = data.data;
-                totalProductList = data.meta.total;
-                renderProducts(data.data);
+                warehouseList = data.data;
+                totalWarehouseList = data.meta.total;
+                renderWarehouses(data.data);
                 renderPagination();
             })
             .catch(error => {
@@ -267,58 +226,47 @@ $selectedWarehouseId = request()->get('warehouse_id');
             });
         }
 
-        function renderProducts(products) {
-            const tbody = document.getElementById('products-tbody');
+        function renderWarehouses(warehouses) {
+            const tbody = document.getElementById('warehouses-tbody');
             tbody.innerHTML = '';
-            var inventoryHtml = '';
-            products.forEach(product => {
-                const inventoryItem = product.inventory_item || [];
-
-                inventoryHtml = '';
-                inventoryItem.forEach(item => {
-                    inventoryHtml += `<div class="text-center">${item.warehouse_name} - <span class="badge bg-info">${item.quantity}</span></div><br>`;
-                });
+            warehouses.forEach(warehouse => {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td class="align-middle text-center">${product.name}</td>
-                <td class="align-middle text-center">${inventoryHtml}</td>
-                <td class="align-middle text-center">${product.unit}</td>
-                <td class="align-middle text-center">${product?.last_import ? product.last_import.format('DD/MM/YYYY') : '-'}</td>
-                <td class="align-middle text-center">${product?.last_export ? product.last_export.format('DD/MM/YYYY') : '-'}</td>
-                <td><button type="button" class="btn btn-primary btn-sm m-0 p-2" onclick="openModal(${product.id})">+</button></td>`;
+                row.innerHTML = `<td class="align-middle text-center">${warehouse.name}</td>
+                <td class="align-middle text-center">${warehouse.description}</td>
+                <td class="align-middle text-center">${warehouse.created_at}</td>
+                <td><button type="button" class="btn btn-primary btn-sm m-0 p-2" onclick="openModal(${warehouse.id})">Edit</button></td>`;
                 tbody.appendChild(row);
             });
         }
 
-        function openModal(productId) {
-            const product = productList.find(product => product.id === productId);
-            document.getElementById('product-id').value = product.id;
-            document.getElementById('product-name').value = product.name;
-            document.getElementById('quantity').value = 1;
-            modalImport.show();
+        function openModal(warehouseId) {
+            const warehouse = warehouseList.find(warehouse => warehouse.id === warehouseId);
+            document.getElementById('warehouse-id').value = warehouse.id;
+            document.getElementById('create-warehouse-name').value = warehouse.name;
+            document.getElementById('create-warehouse-description').value = warehouse.description;
+            modalCreateWarehouse.show();
         }
 
-        function importProduct() {
-            const productId = document.getElementById('product-id').value;
-            const quantity = document.getElementById('quantity').value;
-            const userName = document.getElementById('user-name').value;
+        function editWarehouse() {
             const warehouseId = document.getElementById('warehouse-id').value;
-            console.log(productId, quantity, userName, warehouseId);
-            fetch('/products/import', {
+            const name = document.getElementById('warehouse-name').value;
+            const description = document.getElementById('warehouse-description').value;
+            console.log(warehouseId, name, description);
+            fetch('/warehouses/edit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({
-                    product_id: productId,
-                    quantity: quantity,
-                    user_name: userName,
-                    warehouse_id: warehouseId
+                    id: warehouseId,
+                    name: name,
+                    description: description
                 })
             }).then(response => response.json())
             .then(data => {
                 modalImport.hide();
-                loadProducts();
+                loadWarehouses();
             })
             .catch(error => {
                 alert(error.message);
@@ -326,7 +274,7 @@ $selectedWarehouseId = request()->get('warehouse_id');
         }
         
         function renderPagination() {
-            const totalPages = Math.ceil(totalProductList / 10);
+            const totalPages = Math.ceil(totalWarehouseList / 10);
 
             document.getElementById('pagination').innerHTML = `
                 <button class="btn btn-primary btn-sm m-0 p-2" ${page === 1 ? 'disabled' : ''} onclick="changePage(${page - 1})">Prev</button>
@@ -341,37 +289,37 @@ $selectedWarehouseId = request()->get('warehouse_id');
 
         function changePage(pageChange) {
             page = pageChange;
-            loadProducts();
+            loadWarehouses();
         }
-        loadProducts();
+        loadWarehouses();
 
-        function createProduct() {
-            document.getElementById('create-product-name').value = '';
-            document.getElementById('create-product-unit').value = '';
-            document.getElementById('create-product-quantity').value = '';
-            modalCreateProduct.show();
+        function createWarehouse() {
+            document.getElementById('create-warehouse-name').value = '';
+            document.getElementById('create-warehouse-description').value = '';
+            document.getElementById('warehouse-id').value = '';
+            modalCreateWarehouse.show();
         }
 
-        function saveProduct() {
-            const productName = document.getElementById('create-product-name').value;
-            const unit = document.getElementById('create-product-unit').value;
-            const quantity = document.getElementById('create-product-quantity').value;
-            console.log(productName, unit, quantity);
-            fetch('/products/create', {
+        function saveWarehouse() {
+            const warehouseName = document.getElementById('create-warehouse-name').value;
+            const warehouseId = document.getElementById('warehouse-id').value;
+            const description = document.getElementById('create-warehouse-description').value;
+            console.log(warehouseId, warehouseName, description);
+            fetch('/warehouse/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
                 body: JSON.stringify({
-                    name: productName,
-                    unit: unit,
-                    quantity: quantity
+                    id: warehouseId,
+                    name: warehouseName,
+                    description: description
                 })
             }).then(response => response.json())
             .then(data => {
-                modalCreateProduct.hide();
-                loadProducts();
+                modalCreateWarehouse.hide();
+                loadWarehouses();
             })
             .catch(error => {
                 alert(error.message);

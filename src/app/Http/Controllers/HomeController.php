@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\WarehouseModel;
 
 class HomeController extends Controller
 {
@@ -13,6 +14,7 @@ class HomeController extends Controller
 
     public function warehouse()
     {
-        return view('warehouse.index');
+        $warehouses = WarehouseModel::all();
+        return view('warehouse.index', compact('warehouses'));
     }
 }

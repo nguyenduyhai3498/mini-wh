@@ -90,6 +90,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'warehouse'], function () {
     Route::get('/', [HomeController::class, 'warehouse'])->name('warehouse');
+    Route::get('/manager', [ProductController::class, 'index'])->name('warehouse.index');
+	Route::get('/list', [ProductController::class, 'warehouseList'])->name('warehouse.list');
+	Route::post('/create', [ProductController::class, 'createWarehouse'])->name('warehouse.create');
+	Route::post('/delete', [ProductController::class, 'deleteWarehouse'])->name('warehouse.delete');
 });	
 
 Route::group(['prefix' => 'products'], function () {
